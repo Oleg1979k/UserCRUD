@@ -38,7 +38,7 @@
                 <h4 class="modal-title" id="modelHeading"></h4>
             </div>
             <div class="modal-body">
-                <form id="productForm" name="productForm" class="form-horizontal">
+                <form id="productForm" name="productForm" enctype="multipart/form-data" class="form-horizontal">
                     <input type="hidden" name="product_id" id="product_id">
                     <div class="form-group">
                         <label for="name" class="col-sm-2 control-label">Name</label>
@@ -51,6 +51,13 @@
                         <label class="col-sm-2 control-label">Details</label>
                         <div class="col-sm-12">
                             <textarea id="detail" name="detail" required="" placeholder="Enter Details" class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Image</label>
+                        <div class="col-sm-12">
+                            <input type="file" id="fileAjax" name="fileAjax" />
                         </div>
                     </div>
 
@@ -133,14 +140,25 @@
         --------------------------------------------
         --------------------------------------------*/
         $('#saveBtn').click(function (e) {
+            $(this).html('Sending..');
             e.preventDefault();
+            var myFile = document.getElementById('fileAjax');
+           var files = myFile.files;
+            var formData = new FormData();
+            var file = files[0];
+            formData.append('image', file, file.name);
+            formData.append('name',$('#name').val());
+            formData.append('detail',$('#detail').val());
+            console.log(formData)
             $(this).html('Sending..');
 
             $.ajax({
-                data: $('#productForm').serialize(),
+                data: formData,
                 url: "{{ route('products-ajax-crud.store') }}",
                 type: "POST",
-                dataType: 'json',
+                dataType: 'JSON',
+                processData: false,
+                contentType: false,
                 success: function (data) {
 
                     $('#productForm').trigger("reset");

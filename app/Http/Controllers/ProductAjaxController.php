@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImageUploadRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use DataTables;
@@ -43,7 +44,7 @@ class ProductAjaxController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ImageUploadRequest $request)
     {
         Product::updateOrCreate([
             'id' => $request->product_id
@@ -52,7 +53,9 @@ class ProductAjaxController extends Controller
                 'name' => $request->name,
                 'detail' => $request->detail
             ]);
+        $filename = time() . '.' . $request->image->extension();
 
+        $request->image->move(public_path('images'), $filename);
         return response()->json(['success'=>'Product saved successfully.']);
     }
     /**
